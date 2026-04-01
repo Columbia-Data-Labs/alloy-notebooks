@@ -1,6 +1,6 @@
 {
     "name": "alloy-notebooks",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Multi-language notebook extension for JupyterLab with SQL, charting, and cross-language data sharing",
     "keywords": [
         "jupyter",

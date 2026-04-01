@@ -50,17 +50,20 @@ interface IConnectionPanelProps {
   serverSettings: ServerConnection.ISettings;
   onConnect: (connString: string, alias: string) => void;
   onDisconnect: (alias: string) => void;
+  kernelRestartCount: number; // increments on kernel restart to trigger reconnect
 }
 
 const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
   serverSettings,
   onConnect,
-  onDisconnect
+  onDisconnect,
+  kernelRestartCount
 }) => {
   const [connections, setConnections] = useState<IConnectionConfig[]>([]);
   const [editing, setEditing] = useState<IConnectionConfig | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [activeConnection, setActiveConnection] = useState<string | null>(null);
+  const [activeConnections, setActiveConnections] = useState<Set<string>>(new Set());
+  const [connectedConfigs, setConnectedConfigs] = useState<Map<string, IConnectionConfig>>(new Map());
   const [status, setStatus] = useState('');
 
   const loadConnections = useCallback(async () => {
@@ -78,6 +81,19 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
   useEffect(() => {
     loadConnections();
   }, [loadConnections]);
+
+  // Auto-reconnect ALL active connections when kernel restarts
+  useEffect(() => {
+    if (kernelRestartCount > 0 && connectedConfigs.size > 0) {
+      setStatus(`Kernel restarted -- reconnecting ${connectedConfigs.size} connection(s)...`);
+      connectedConfigs.forEach(conn => {
+        handleConnect(conn);
+      });
+    } else if (kernelRestartCount > 0 && activeConnections.size > 0) {
+      setActiveConnections(new Set());
+      setStatus('Kernel restarted -- connections lost.');
+    }
+  }, [kernelRestartCount]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSave = async () => {
     if (!editing) {
@@ -112,8 +128,13 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
         method: 'DELETE'
       });
       await loadConnections();
-      if (activeConnection === id) {
-        setActiveConnection(null);
+      if (activeConnections.has(id)) {
+        const newActive = new Set(activeConnections);
+        newActive.delete(id);
+        setActiveConnections(newActive);
+        const newConfigs = new Map(connectedConfigs);
+        newConfigs.delete(id);
+        setConnectedConfigs(newConfigs);
       }
     } catch (err) {
       setStatus(`Error: ${err}`);
@@ -122,7 +143,6 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
 
   const handleConnect = async (conn: IConnectionConfig) => {
     try {
-      // Get the connection string from the server
       const data = await requestAPI<{ connection_string: string }>(
         'connection-string',
         serverSettings,
@@ -134,8 +154,13 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
       );
       const alias = conn.name || conn.id || 'default';
       onConnect(data.connection_string, alias);
-      setActiveConnection(conn.id || null);
-      setStatus(`Connected to ${conn.name || conn.server}`);
+      const newActive = new Set(activeConnections);
+      newActive.add(conn.id || '');
+      setActiveConnections(newActive);
+      const newConfigs = new Map(connectedConfigs);
+      newConfigs.set(conn.id || '', conn);
+      setConnectedConfigs(newConfigs);
+      setStatus(`Connected to ${conn.name || conn.server} (${newActive.size} active)`);
     } catch (err) {
       setStatus(`Connection failed: ${err}`);
     }
@@ -144,8 +169,13 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
   const handleDisconnect = (conn: IConnectionConfig) => {
     const alias = conn.name || conn.id || 'default';
     onDisconnect(alias);
-    setActiveConnection(null);
-    setStatus('Disconnected.');
+    const newActive = new Set(activeConnections);
+    newActive.delete(conn.id || '');
+    setActiveConnections(newActive);
+    const newConfigs = new Map(connectedConfigs);
+    newConfigs.delete(conn.id || '');
+    setConnectedConfigs(newConfigs);
+    setStatus(newActive.size > 0 ? `Disconnected from ${conn.name || conn.server} (${newActive.size} active)` : 'Disconnected.');
   };
 
   const updateField = (field: keyof IConnectionConfig, value: string) => {
@@ -177,7 +207,7 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
         {connections.map(conn => (
           <div
             key={conn.id}
-            className={`alloy-connection-item ${activeConnection === conn.id ? 'active' : ''}`}
+            className={`alloy-connection-item ${activeConnections.has(conn.id || '') ? 'active' : ''}`}
           >
             <div className="alloy-connection-info">
               <span className="alloy-connection-name">
@@ -189,7 +219,7 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
               </span>
             </div>
             <div className="alloy-connection-actions">
-              {activeConnection === conn.id ? (
+              {activeConnections.has(conn.id || '') ? (
                 <button
                   className="alloy-btn alloy-btn-sm alloy-btn-danger"
                   onClick={() => handleDisconnect(conn)}
@@ -390,6 +420,7 @@ export class ConnectionPanel extends ReactWidget {
   private _serverSettings: ServerConnection.ISettings;
   private _onConnect: (connString: string, alias: string) => void;
   private _onDisconnect: (alias: string) => void;
+  private _kernelRestartCount = 0;
 
   constructor(
     serverSettings: ServerConnection.ISettings,
@@ -406,12 +437,21 @@ export class ConnectionPanel extends ReactWidget {
     this.addClass('alloy-sidebar');
   }
 
+  /**
+   * Call this when the kernel restarts to trigger auto-reconnect.
+   */
+  notifyKernelRestarted(): void {
+    this._kernelRestartCount++;
+    this.update(); // triggers React re-render with new count
+  }
+
   render(): JSX.Element {
     return (
       <ConnectionPanelComponent
         serverSettings={this._serverSettings}
         onConnect={this._onConnect}
         onDisconnect={this._onDisconnect}
+        kernelRestartCount={this._kernelRestartCount}
       />
     );
   }

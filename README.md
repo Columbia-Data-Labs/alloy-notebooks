@@ -24,6 +24,13 @@ Built as a replacement for Azure Data Studio's notebook experience, which was [r
 - Windows Authentication and SQL Authentication
 - Connections persist across sessions (`~/.alloy/connections.json`)
 
+### Multiple Database Connections
+- Connect to multiple databases simultaneously (SQL Server, PostgreSQL, MariaDB, etc.)
+- Each connection gets a named alias
+- Target specific connections with `-- connection: alias` in SQL cells
+- Sidebar shows all active connections with green indicators
+- Auto-reconnects all connections when the kernel restarts
+
 ### Cross-Language Data Sharing
 - SQL results automatically available as pandas DataFrames in Python
 - Name your results with `-- save as: my_data` in SQL cells
@@ -82,12 +89,19 @@ pip install pyarrow rpy2-arrow
 
 ## Example Workflow
 
-**SQL cell:**
+**SQL cell (default connection):**
 ```sql
 -- save as: orders
 SELECT customer_name, product, quantity, price
 FROM sales.orders
 WHERE order_date > '2026-01-01'
+```
+
+**SQL cell (specific connection):**
+```sql
+-- connection: nas
+-- save as: backups
+SELECT * FROM backup_logs ORDER BY created_at DESC
 ```
 
 **Python cell:**

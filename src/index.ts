@@ -46,22 +46,45 @@ function executeInKernel(
  * with Table/Chart buttons inline.
  */
 function wrapSqlAsPython(sql: string): string {
-  // Check for "-- save as: varname" directive in the SQL
+  // Check for "-- save as: varname" directive
   let saveAs = '';
   const saveMatch = sql.match(/^--\s*save\s+as\s*:\s*([a-zA-Z_]\w*)\s*$/m);
   if (saveMatch) {
     saveAs = saveMatch[1];
   }
 
+  // Check for "-- connection: alias" directive
+  let connAlias = '';
+  const connMatch = sql.match(/^--\s*connection\s*:\s*(\S+)\s*$/m);
+  if (connMatch) {
+    connAlias = connMatch[1];
+  }
+
   const escaped = sql.replace(/\\/g, '\\\\').replace(/"""/g, '\\"\\"\\"');
+
+  // Build connection selection code
+  let connCode: string;
+  if (connAlias) {
+    const safeAlias = connAlias.replace(/[^a-zA-Z0-9_]/g, '_');
+    connCode = [
+      `_alloy_conn = _CM.connections.get("${safeAlias}")`,
+      'if _alloy_conn is None:',
+      `    raise RuntimeError("Connection '${safeAlias}' not found. Available: " + ", ".join(_CM.connections.keys()))`,
+    ].join('\n');
+  } else {
+    connCode = [
+      '_alloy_conn = _CM.current',
+      'if _alloy_conn is None:',
+      '    raise RuntimeError("No active database connection. Use the Alloy sidebar to connect first.")',
+    ].join('\n');
+  }
+
   const lines = [
     '# [Alloy: SQL Cell]',
     'from sql.connection import ConnectionManager as _CM',
     'import pandas as _pd, json as _json',
     'from IPython.display import display as _display',
-    '_alloy_conn = _CM.current',
-    'if _alloy_conn is None:',
-    '    raise RuntimeError("No active database connection. Use the Alloy sidebar to connect first.")',
+    connCode,
     `_alloy_raw = _alloy_conn.execute("""${escaped}""")`,
     'try:',
     '    _alloy_rows = _alloy_raw.fetchall()',
@@ -73,7 +96,7 @@ function wrapSqlAsPython(sql: string): string {
   // If user specified "-- save as: varname", also save under that name
   if (saveAs) {
     lines.push(`    ${saveAs} = _alloy_last_result.copy()`);
-    lines.push(`    print("\\u2713 Saved as '${saveAs}' ({len(_alloy_last_result)} rows)")`);
+    lines.push(`    print(f"\\u2713 Saved as '${saveAs}' ({len(_alloy_last_result)} rows)")`);
   }
 
   lines.push(
@@ -286,6 +309,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
     if (restorer) {
       restorer.add(connectionPanel, 'alloy-connection-panel');
     }
+
+    // Listen for kernel restarts to auto-reconnect
+    tracker.widgetAdded.connect((_, panel) => {
+      const session = panel.sessionContext;
+      session.statusChanged.connect((_, status) => {
+        if (status === 'restarting') {
+          connectionPanel.notifyKernelRestarted();
+        }
+      });
+    });
 
     // ──────────────────────────────────────────────
     // 3. Unified cell type dropdown (Python/SQL/R/Markdown/Raw)
