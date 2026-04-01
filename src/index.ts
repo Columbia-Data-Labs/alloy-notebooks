@@ -73,9 +73,18 @@ function wrapSqlAsPython(sql: string): string {
     ].join('\n');
   } else {
     connCode = [
-      '_alloy_conn = _CM.current',
-      'if _alloy_conn is None:',
+      '# No -- connection: specified — auto-select',
+      '_alloy_conns = _CM.connections',
+      'if len(_alloy_conns) == 0:',
       '    raise RuntimeError("No active database connection. Use the Alloy sidebar to connect first.")',
+      'elif len(_alloy_conns) == 1:',
+      '    _alloy_conn = list(_alloy_conns.values())[0]',
+      'else:',
+      '    raise RuntimeError(',
+      '        "Multiple connections are active. Specify which one with:\\n"',
+      '        "  -- connection: <alias>\\n\\n"',
+      '        "Available connections: " + ", ".join(_alloy_conns.keys())',
+      '    )',
     ].join('\n');
   }
 
