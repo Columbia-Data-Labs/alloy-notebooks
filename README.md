@@ -43,18 +43,29 @@ Built as a replacement for Azure Data Studio's notebook experience, which was [r
 
 ## Install
 
+### From PyPI (recommended)
 ```bash
 pip install alloy-notebooks
 ```
 
-### Optional: Fast R Integration
+### From GitHub (latest development version)
+```bash
+pip install git+https://github.com/Columbia-Data-Labs/alloy-notebooks.git
+```
 
-For R support:
+### Optional dependencies
+
+For **SQL Server** connections:
+```bash
+pip install pyodbc
+```
+
+For **R** support:
 ```bash
 pip install rpy2
 ```
 
-For near-zero-copy data transfer between Python and R:
+For **fast data transfer** between Python and R (near-zero-copy via Apache Arrow):
 ```bash
 pip install pyarrow rpy2-arrow
 ```
