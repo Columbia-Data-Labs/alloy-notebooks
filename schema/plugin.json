@@ -1,0 +1,42 @@
+{
+  "jupyter.lab.shortcuts": [
+    {
+      "command": "alloy:configure-chart",
+      "keys": ["Accel Shift C"],
+      "selector": ".jp-Notebook"
+    }
+  ],
+  "jupyter.lab.toolbars": {
+    "Cell": [
+      {
+        "name": "alloy-language",
+        "command": ""
+      }
+    ]
+  },
+  "title": "Alloy Notebooks",
+  "description": "Settings for Alloy Notebooks — multi-language notebook extension with SQL, charting, and cross-language data sharing.",
+  "type": "object",
+  "properties": {
+    "defaultLanguage": {
+      "type": "string",
+      "title": "Default cell language",
+      "description": "Default language for new cells (python, sql, r)",
+      "default": "python",
+      "enum": ["python", "sql", "r"]
+    },
+    "autoLoadExtension": {
+      "type": "boolean",
+      "title": "Auto-load kernel extension",
+      "description": "Automatically load Alloy kernel magic when a notebook opens",
+      "default": true
+    },
+    "showLanguageIcons": {
+      "type": "boolean",
+      "title": "Show language icons on cells",
+      "description": "Display a small language icon (Python, SQL, R, Markdown) on the left margin of each cell",
+      "default": true
+    }
+  },
+  "additionalProperties": false
+}

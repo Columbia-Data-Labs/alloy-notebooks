@@ -1,0 +1,16 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v4.5.2
+_src_path: https://github.com/jupyterlab/extension-template
+author_email: alloy@example.com
+author_name: Alloy Team
+has_ai_rules: false
+has_binder: false
+has_settings: true
+kind: frontend-and-server
+labextension_name: alloy-notebooks
+project_short_description: Multi-language notebook extension for JupyterLab with SQL,
+    charting, and cross-language data sharing
+python_name: alloy_notebooks
+repository: https://github.com/alloy-notebooks/alloy-notebooks
+test: true
+

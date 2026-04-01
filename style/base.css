@@ -1,0 +1,420 @@
+/* Alloy Notebooks — Base Styles */
+
+/* ── Sidebar Panel ── */
+.alloy-sidebar {
+  min-width: 250px;
+  overflow-y: auto;
+  background: var(--jp-layout-color1);
+  color: var(--jp-ui-font-color1);
+  font-size: var(--jp-ui-font-size1);
+}
+
+.alloy-connection-panel {
+  padding: 8px;
+}
+
+.alloy-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 8px;
+  border-bottom: 1px solid var(--jp-border-color1);
+  margin-bottom: 8px;
+}
+
+.alloy-panel-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ── Buttons ── */
+.alloy-btn {
+  border: 1px solid var(--jp-border-color1);
+  background: var(--jp-layout-color2);
+  color: var(--jp-ui-font-color1);
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.alloy-btn:hover {
+  background: var(--jp-layout-color3);
+}
+
+.alloy-btn-primary {
+  background: var(--jp-brand-color1);
+  color: white;
+  border-color: var(--jp-brand-color1);
+}
+
+.alloy-btn-primary:hover {
+  background: var(--jp-brand-color2);
+}
+
+.alloy-btn-success {
+  background: #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+.alloy-btn-danger {
+  background: transparent;
+  color: #dc3545;
+  border-color: transparent;
+}
+
+.alloy-btn-danger:hover {
+  background: #dc3545;
+  color: white;
+}
+
+.alloy-btn-sm {
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+/* ── Connection List ── */
+.alloy-connection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alloy-connection-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border: 1px solid var(--jp-border-color2);
+  border-radius: 4px;
+  background: var(--jp-layout-color2);
+}
+
+.alloy-connection-item.active {
+  border-color: var(--jp-brand-color1);
+  background: var(--jp-brand-color4, rgba(33, 150, 243, 0.1));
+}
+
+.alloy-connection-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+.alloy-connection-name {
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alloy-connection-detail {
+  font-size: 10px;
+  color: var(--jp-ui-font-color2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alloy-connection-actions {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+
+.alloy-empty {
+  padding: 12px;
+  text-align: center;
+  color: var(--jp-ui-font-color2);
+  font-size: 12px;
+}
+
+.alloy-status {
+  padding: 4px 8px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: var(--jp-ui-font-color2);
+  background: var(--jp-layout-color2);
+  border-radius: 3px;
+}
+
+/* ── Connection Form ── */
+.alloy-connection-form {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 4px;
+  background: var(--jp-layout-color2);
+}
+
+.alloy-connection-form h4 {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
+.alloy-connection-form label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--jp-ui-font-color2);
+  margin: 8px 0 3px;
+}
+
+.alloy-connection-form input,
+.alloy-connection-form select {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 3px;
+  background: var(--jp-layout-color1);
+  color: var(--jp-ui-font-color1);
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.alloy-connection-form input:focus,
+.alloy-connection-form select:focus {
+  outline: none;
+  border-color: var(--jp-brand-color1);
+}
+
+.alloy-form-buttons {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  justify-content: flex-end;
+}
+
+/* ── Chart Dialog ── */
+.alloy-chart-dialog {
+  min-width: 350px;
+  padding: 8px 0;
+}
+
+.alloy-form-group {
+  margin-bottom: 10px;
+}
+
+.alloy-form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--jp-ui-font-color2);
+  margin-bottom: 3px;
+}
+
+.alloy-form-group input,
+.alloy-form-group select {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 3px;
+  background: var(--jp-layout-color1);
+  color: var(--jp-ui-font-color1);
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+/* ── Result Table ── */
+.alloy-result-container {
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 4px 0;
+}
+
+.alloy-result-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--jp-layout-color2);
+  border-bottom: 1px solid var(--jp-border-color1);
+}
+
+.alloy-toolbar-btn {
+  border: 1px solid var(--jp-border-color1);
+  background: var(--jp-layout-color1);
+  color: var(--jp-ui-font-color1);
+  padding: 3px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.alloy-toolbar-btn.active {
+  background: var(--jp-brand-color1);
+  color: white;
+  border-color: var(--jp-brand-color1);
+}
+
+.alloy-toolbar-btn:hover {
+  background: var(--jp-layout-color3);
+}
+
+.alloy-toolbar-btn.active:hover {
+  background: var(--jp-brand-color2);
+}
+
+.alloy-result-info {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--jp-ui-font-color2);
+}
+
+.alloy-table-wrapper {
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.alloy-result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.alloy-result-table th {
+  position: sticky;
+  top: 0;
+  background: var(--jp-layout-color2);
+  border-bottom: 2px solid var(--jp-border-color1);
+  padding: 6px 10px;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.alloy-result-table td {
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--jp-border-color2);
+  white-space: nowrap;
+}
+
+.alloy-result-table tbody tr:hover {
+  background: var(--jp-layout-color2);
+}
+
+.alloy-null {
+  color: var(--jp-ui-font-color3);
+  font-style: italic;
+}
+
+/* ── Chart Area ── */
+.alloy-chart-area {
+  padding: 8px;
+  min-height: 200px;
+  background: #ffffff;
+  border-top: 1px solid var(--jp-border-color2);
+}
+
+.alloy-chart-area svg {
+  max-width: 100%;
+}
+
+/* ── Chart Grid (one mini-chart per column) ── */
+.alloy-chart-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+}
+
+.alloy-mini-chart {
+  flex: 0 0 auto;
+  min-width: 250px;
+  max-width: 320px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fafafa;
+  overflow: hidden;
+}
+
+.alloy-mini-chart-title {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #333;
+  background: #f0f0f0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* ── Language Selector Toolbar ── */
+.alloy-lang-toolbar-item {
+  display: flex;
+  align-items: center;
+}
+
+.alloy-language-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px;
+}
+
+.alloy-lang-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--jp-ui-font-color2);
+}
+
+.alloy-lang-select {
+  padding: 2px 6px;
+  border: 1px solid var(--jp-border-color1);
+  border-radius: 3px;
+  background: var(--jp-layout-color1);
+  color: var(--jp-ui-font-color1);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: 80px;
+}
+
+.alloy-lang-select:focus {
+  outline: none;
+  border-color: var(--jp-brand-color1);
+}
+
+/* ── Hide JupyterLab's built-in cell type dropdown (we replace it) ── */
+.jp-Notebook-toolbarCellType {
+  display: none !important;
+}
+
+/* ── Cell language icons on left margin ── */
+.alloy-icons-enabled .alloy-cell-python .jp-InputPrompt::before,
+.alloy-icons-enabled .alloy-cell-sql .jp-InputPrompt::before,
+.alloy-icons-enabled .alloy-cell-r .jp-InputPrompt::before,
+.alloy-icons-enabled .alloy-cell-markdown .jp-InputPrompt::before {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: 0 auto 2px;
+  opacity: 0.8;
+}
+
+/* Python: blue/yellow snake */
+.alloy-icons-enabled .alloy-cell-python .jp-InputPrompt::before {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C8.1 2 8 3.6 8 4v2h4v1H6c-2 0-4 1.5-4 4.5S4 16 6 16h2v-2.5C8 11 10 9 12 9h4c1.7 0 3-1.3 3-3V4c0-1.7-1.3-2-3-2h-4zm-1 2a1 1 0 110 2 1 1 0 010-2z' fill='%23306998'/%3E%3Cpath d='M12 22c3.9 0 4-1.6 4-2v-2h-4v-1h6c2 0 4-1.5 4-4.5S20 8 18 8h-2v2.5c0 2.5-2 4.5-4 4.5H8c-1.7 0-3 1.3-3 3v2c0 1.7 1.3 2 3 2h4zm1-2a1 1 0 110-2 1 1 0 010 2z' fill='%23FFD43B'/%3E%3C/svg%3E");
+}
+
+/* SQL: database cylinder */
+.alloy-icons-enabled .alloy-cell-sql .jp-InputPrompt::before {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='6' rx='8' ry='3' fill='none' stroke='%231b6ac9' stroke-width='2'/%3E%3Cpath d='M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6' fill='none' stroke='%231b6ac9' stroke-width='2'/%3E%3Cpath d='M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3' fill='none' stroke='%231b6ac9' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+/* R: the letter R */
+.alloy-icons-enabled .alloy-cell-r .jp-InputPrompt::before {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23276dc3'/%3E%3Ctext x='12' y='16.5' text-anchor='middle' font-size='14' font-weight='bold' font-family='sans-serif' fill='white'%3ER%3C/text%3E%3C/svg%3E");
+}
+
+/* Markdown: M icon */
+.alloy-icons-enabled .alloy-cell-markdown .jp-InputPrompt::before {
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='4' width='20' height='16' rx='2' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3Cpath d='M5 16V8l3 4 3-4v8M17 16l-3-4h2V8h2v4h2l-3 4z' fill='%23888'/%3E%3C/svg%3E");
+}
