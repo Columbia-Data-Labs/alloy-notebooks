@@ -126,6 +126,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       }
 
       const code = [
+        'import os as _os; _os.environ["PLOOMBER_STATS_ENABLED"] = "false"; del _os',
         'try:',
         '    get_ipython().run_line_magic("load_ext", "sql")',
         'except: pass',
@@ -228,23 +229,46 @@ const plugin: JupyterFrontEndPlugin<void> = {
     }
 
     // ──────────────────────────────────────────────
-    // 4. Auto-load JupySQL and Alloy kernel magic when notebook opens
+    // 4. Load Alloy kernel magic when notebook opens (lightweight)
+    //    JupySQL is NOT pre-loaded — it loads lazily when first SQL cell runs
+    //    or when user connects via sidebar. This prevents startup hangs.
     // ──────────────────────────────────────────────
     tracker.widgetAdded.connect((_, notebookPanel) => {
-      notebookPanel.sessionContext.ready.then(async () => {
+      notebookPanel.sessionContext.ready.then(() => {
+        // Wait for kernel to be fully idle before loading extensions.
+        // Sending code before the kernel finishes initializing can cause hangs.
         const kernel = notebookPanel.sessionContext.session?.kernel;
         if (!kernel) {
           return;
         }
-        const f1 = kernel.requestExecute({
-          code: 'try:\n    get_ipython().run_line_magic("load_ext", "sql")\nexcept: pass',
-          silent: true
-        });
-        await f1.done;
-        kernel.requestExecute({
-          code: 'try:\n    get_ipython().run_line_magic("load_ext", "alloy_notebooks.kernel")\nexcept: pass',
-          silent: true
-        });
+        const doLoad = () => {
+          kernel.requestExecute({
+            code: [
+              'import os as _os; _os.environ["PLOOMBER_STATS_ENABLED"] = "false"; del _os',
+              'try:',
+              '    get_ipython().run_line_magic("load_ext", "alloy_notebooks.kernel")',
+              'except: pass'
+            ].join('\n'),
+            silent: true
+          });
+        };
+        if (kernel.status === 'idle') {
+          doLoad();
+        } else {
+          // Wait until kernel goes idle
+          const handler = () => {
+            if (kernel.status === 'idle') {
+              kernel.statusChanged.disconnect(handler);
+              doLoad();
+            }
+          };
+          kernel.statusChanged.connect(handler);
+          // Safety: if kernel never goes idle within 10s, load anyway
+          setTimeout(() => {
+            kernel.statusChanged.disconnect(handler);
+            doLoad();
+          }, 10000);
+        }
       });
     });
 
