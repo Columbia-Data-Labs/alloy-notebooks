@@ -115,22 +115,37 @@ const plugin: JupyterFrontEndPlugin<void> = {
     // ──────────────────────────────────────────────
     // 2. Connection Manager sidebar
     // ──────────────────────────────────────────────
-    const onConnect = (connString: string, alias: string) => {
+    const onConnect = (connString: string, alias: string): Promise<boolean> => {
       const escaped = connString.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
       const safeAlias = alias.replace(/[^a-zA-Z0-9_]/g, '_');
-      executeInKernel(
-        tracker,
-        [
-          'try:',
-          '    get_ipython().run_line_magic("load_ext", "sql")',
-          'except: pass',
-          `_alloy_conn_str = '${escaped}'`,
-          'from sql.connection import ConnectionManager as _CM',
-          `_CM.set(_alloy_conn_str, displaycon=False, alias="${safeAlias}")`,
-          `print("\\u2713 Connected to ${safeAlias}")`,
-          'del _alloy_conn_str, _CM'
-        ].join('\n')
-      );
+
+      const notebook = tracker.currentWidget;
+      const kernel = notebook?.sessionContext.session?.kernel;
+      if (!kernel) {
+        return Promise.resolve(false);
+      }
+
+      const code = [
+        'try:',
+        '    get_ipython().run_line_magic("load_ext", "sql")',
+        'except: pass',
+        `_alloy_conn_str = '${escaped}'`,
+        'from sql.connection import ConnectionManager as _CM',
+        `_CM.set(_alloy_conn_str, displaycon=False, alias="${safeAlias}")`,
+        `print("\\u2713 Connected to ${safeAlias}")`,
+        'del _alloy_conn_str, _CM'
+      ].join('\n');
+
+      return new Promise<boolean>(resolve => {
+        const future = kernel.requestExecute({ code, silent: true });
+        let success = true;
+        future.onIOPub = msg => {
+          if (msg.header.msg_type === 'error') {
+            success = false;
+          }
+        };
+        future.done.then(() => resolve(success)).catch(() => resolve(false));
+      });
     };
 
     const onDisconnect = (alias: string) => {

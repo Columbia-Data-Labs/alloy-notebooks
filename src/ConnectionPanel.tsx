@@ -48,7 +48,7 @@ const DRIVERS = [
 
 interface IConnectionPanelProps {
   serverSettings: ServerConnection.ISettings;
-  onConnect: (connString: string, alias: string) => void;
+  onConnect: (connString: string, alias: string) => Promise<boolean>;
   onDisconnect: (alias: string) => void;
   kernelRestartCount: number; // increments on kernel restart to trigger reconnect
 }
@@ -143,6 +143,7 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
 
   const handleConnect = async (conn: IConnectionConfig) => {
     try {
+      setStatus(`Connecting to ${conn.name || conn.server}...`);
       const data = await requestAPI<{ connection_string: string }>(
         'connection-string',
         serverSettings,
@@ -153,7 +154,11 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
         }
       );
       const alias = conn.name || conn.id || 'default';
-      onConnect(data.connection_string, alias);
+      const success = await onConnect(data.connection_string, alias);
+      if (!success) {
+        setStatus(`Failed to connect to ${conn.name || conn.server}. Is the kernel running?`);
+        return;
+      }
       const newActive = new Set(activeConnections);
       newActive.add(conn.id || '');
       setActiveConnections(newActive);
@@ -418,13 +423,13 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
  */
 export class ConnectionPanel extends ReactWidget {
   private _serverSettings: ServerConnection.ISettings;
-  private _onConnect: (connString: string, alias: string) => void;
+  private _onConnect: (connString: string, alias: string) => Promise<boolean>;
   private _onDisconnect: (alias: string) => void;
   private _kernelRestartCount = 0;
 
   constructor(
     serverSettings: ServerConnection.ISettings,
-    onConnect: (connString: string, alias: string) => void,
+    onConnect: (connString: string, alias: string) => Promise<boolean>,
     onDisconnect: (alias: string) => void
   ) {
     super();
