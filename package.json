@@ -1,6 +1,6 @@
 {
     "name": "alloy-notebooks",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "description": "Multi-language notebook extension for JupyterLab with SQL, charting, and cross-language data sharing",
     "keywords": [
         "jupyter",
@@ -59,11 +59,16 @@
     "dependencies": {
         "@jupyterlab/application": "^4.0.0",
         "@jupyterlab/apputils": "^4.0.0",
+        "@codemirror/lang-sql": "^6.0.0",
+        "@codemirror/language": "^6.0.0",
+        "@codemirror/legacy-modes": "^6.0.0",
         "@jupyterlab/cells": "^4.0.0",
+        "@jupyterlab/codemirror": "^4.0.0",
         "@jupyterlab/codeeditor": "^4.0.0",
         "@jupyterlab/codemirror": "^4.0.0",
         "@jupyterlab/coreutils": "^6.0.0",
         "@jupyterlab/notebook": "^4.0.0",
+        "@jupyterlab/outputarea": "^4.0.0",
         "@jupyterlab/rendermime": "^4.0.0",
         "@jupyterlab/rendermime-interfaces": "^3.0.0",
         "@jupyterlab/services": "^7.0.0",
@@ -126,7 +131,10 @@
         },
         "extension": true,
         "outputDir": "alloy_notebooks/labextension",
-        "schemaDir": "schema"
+        "schemaDir": "schema",
+        "disabledExtensions": [
+            "@jupyterlab/notebook-extension:cell-executor"
+        ]
     },
     "eslintIgnore": [
         "node_modules",
