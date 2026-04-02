@@ -118,6 +118,9 @@ def build_connection_string(conn_config: dict) -> str:
         user_part = ""
 
     host_part = server.replace(",", ":")  # SQL Server uses comma for port
+    port = conn_config.get("port", "")
+    if port:
+        host_part = f"{host_part}:{port}"
 
     base = f"{driver}://{user_part}{host_part}"
     if database:

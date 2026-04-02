@@ -14,6 +14,7 @@ interface IConnectionConfig {
   name: string;
   driver: string;
   server: string;
+  port: string;
   database: string;
   auth_type: string;
   username: string;
@@ -28,13 +29,14 @@ const EMPTY_CONN: IConnectionConfig = {
   name: '',
   driver: 'mssql+pyodbc',
   server: 'localhost',
+  port: '',
   database: '',
   auth_type: 'windows',
   username: '',
   password: '',
   encrypt: 'yes',
   trust_server_certificate: 'true',
-  odbc_driver: '',  // empty = auto-detect on the server
+  odbc_driver: '',
   connection_string: ''
 };
 
@@ -324,6 +326,19 @@ const ConnectionPanelComponent: React.FC<IConnectionPanelProps> = ({
                 value={editing.server}
                 onChange={e => updateField('server', e.target.value)}
                 placeholder="localhost"
+              />
+
+              <label>Port (optional)</label>
+              <input
+                type="text"
+                value={editing.port}
+                onChange={e => updateField('port', e.target.value)}
+                placeholder={
+                  editing.driver.startsWith('mssql') ? '1433' :
+                  editing.driver === 'postgresql' ? '5432' :
+                  editing.driver === 'mysql+pymysql' ? '3306' :
+                  ''
+                }
               />
 
               {editing.driver.startsWith('mssql') && (
