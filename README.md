@@ -126,13 +126,42 @@ summary(model)
 %alloy_vars
 ```
 
+## Platform Support
+
+Works on **Windows**, **Linux**, and **macOS**. R and ODBC driver paths are auto-detected per platform.
+
 ## Requirements
 
 - JupyterLab >= 4.0.0
 - Python >= 3.10
-- For SQL Server: `pyodbc` with an ODBC driver installed
-- For R cells: `rpy2` with R installed
-- For fast transfers: `pyarrow` and `rpy2-arrow`
+
+### Database drivers
+
+| Database | Package | Notes |
+|---|---|---|
+| SQL Server | `pyodbc` | Windows: ODBC Driver 17/18. Linux/Mac: `unixodbc` + Microsoft ODBC driver or FreeTDS |
+| PostgreSQL | `psycopg2` | `pip install psycopg2-binary` |
+| MySQL/MariaDB | `pymysql` | `pip install pymysql` |
+| SQLite | (built-in) | No extra install needed |
+| DuckDB | `duckdb` | `pip install duckdb` |
+
+### SQL Server on Linux/Mac
+```bash
+# Ubuntu/Debian
+curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+sudo apt-get install -y msodbcsql18 unixodbc-dev
+pip install pyodbc
+
+# macOS (Homebrew)
+brew install unixodbc microsoft/mssql-release/msodbcsql18
+pip install pyodbc
+```
+
+### R integration
+- Install R (4.4+) for your platform
+- `pip install rpy2`
+- For fast transfers: `pip install pyarrow rpy2-arrow`
+- R_HOME is auto-detected on all platforms
 
 ## Development
 

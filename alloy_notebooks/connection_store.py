@@ -145,31 +145,35 @@ def build_connection_string(conn_config: dict) -> str:
 
 
 def _detect_mssql_odbc_driver() -> str:
-    """Auto-detect the best available ODBC driver for SQL Server."""
+    """Auto-detect the best available ODBC driver for SQL Server.
+    Works on Windows, Linux, and macOS."""
     try:
         import pyodbc
         drivers = pyodbc.drivers()
     except ImportError:
-        return "ODBC Driver 17 for SQL Server"  # reasonable fallback
+        return "ODBC Driver 18 for SQL Server"  # reasonable fallback
 
-    # Prefer newer drivers first
+    # Prefer newer drivers first — names are the same across platforms
     preferred = [
         "ODBC Driver 18 for SQL Server",
         "ODBC Driver 17 for SQL Server",
         "ODBC Driver 13.1 for SQL Server",
         "ODBC Driver 13 for SQL Server",
         "ODBC Driver 11 for SQL Server",
+        # Windows-specific
         "SQL Server Native Client 11.0",
         "SQL Server Native Client RDA 11.0",
         "SQL Server",
+        # Linux/Mac via FreeTDS
+        "FreeTDS",
     ]
     for p in preferred:
         if p in drivers:
             return p
 
-    # Last resort: return first driver that mentions SQL Server
+    # Last resort: return first driver that mentions SQL Server or FreeTDS
     for d in drivers:
-        if "sql server" in d.lower():
+        if "sql server" in d.lower() or "freetds" in d.lower():
             return d
 
-    return "ODBC Driver 17 for SQL Server"
+    return "ODBC Driver 18 for SQL Server"
