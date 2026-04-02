@@ -390,6 +390,7 @@
 /* ── Cell language icons on left margin ── */
 .alloy-icons-enabled .alloy-cell-python .jp-InputPrompt,
 .alloy-icons-enabled .alloy-cell-sql .jp-InputPrompt,
+.alloy-icons-enabled .alloy-cell-duckdb .jp-InputPrompt,
 .alloy-icons-enabled .alloy-cell-r .jp-InputPrompt,
 .alloy-icons-enabled .alloy-cell-markdown .jp-InputPrompt {
   background-repeat: no-repeat;
@@ -406,6 +407,11 @@
 /* SQL */
 .alloy-icons-enabled .alloy-cell-sql .jp-InputPrompt {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='6' rx='8' ry='3' fill='none' stroke='%231b6ac9' stroke-width='2'/%3E%3Cpath d='M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6' fill='none' stroke='%231b6ac9' stroke-width='2'/%3E%3Cpath d='M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3' fill='none' stroke='%231b6ac9' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+/* DuckDB */
+.alloy-icons-enabled .alloy-cell-duckdb .jp-InputPrompt {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23FFC107'/%3E%3Ctext x='12' y='16' text-anchor='middle' font-size='11' font-weight='bold' font-family='sans-serif' fill='%23333'%3EDB%3C/text%3E%3C/svg%3E");
 }
 
 /* R */

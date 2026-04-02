@@ -1,4 +1,6 @@
 *.bundle.*
+CLAUDE.md
+*.png
 lib/
 node_modules/
 *.log

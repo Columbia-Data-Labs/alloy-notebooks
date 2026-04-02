@@ -22,7 +22,7 @@ const LANGUAGE_KEY = 'alloy:language';
 function getAlloyLanguage(cell: any): string | null {
   try {
     const lang = cell.model.getMetadata(LANGUAGE_KEY);
-    if (lang === 'sql' || lang === 'r') {
+    if (lang === 'sql' || lang === 'r' || lang === 'duckdb') {
       const source: string = cell.model.sharedModel.getSource();
       // Skip if user wrote Python magic (starts with %)
       // Note: # is a valid comment in both SQL and R, so don't skip on #
@@ -63,9 +63,14 @@ async function alloyRunCell(
     return true;
   }
 
-  const wrappedCode = lang === 'sql'
-    ? buildSqlWrapper(source)
-    : buildRWrapper(source);
+  let wrappedCode: string;
+  if (lang === 'sql') {
+    wrappedCode = buildSqlWrapper(source);
+  } else if (lang === 'duckdb') {
+    wrappedCode = buildDuckDBWrapper(source);
+  } else {
+    wrappedCode = buildRWrapper(source);
+  }
 
   // Fire the scheduled signal
   onCellExecutionScheduled({ cell });
@@ -198,6 +203,55 @@ function buildSqlWrapper(sql: string): string {
     '    for _v in ["_alloy_raw","_alloy_rows","_alloy_cols","_alloy_conn","_alloy_conns","_CM","_pd","_json","_display","_alloy_records","_alloy_data","_rec","_r","_c","_v","_e"]:',
     '        try: exec(f"del {_v}")',
     '        except: pass'
+  );
+  return lines.join('\n');
+}
+
+function buildDuckDBWrapper(sql: string): string {
+  let saveAs = '';
+  const saveMatch = sql.match(/^--\s*save\s+as\s*:\s*([a-zA-Z_]\w*)\s*$/m);
+  if (saveMatch) {
+    saveAs = saveMatch[1];
+  }
+
+  const escaped = sql.replace(/\\/g, '\\\\').replace(/"""/g, '\\"\\"\\"');
+
+  const lines = [
+    '# [Alloy: DuckDB Cell]',
+    'import duckdb as _duckdb, pandas as _pd, json as _json',
+    'from IPython.display import display as _display',
+    '',
+    '# DuckDB automatically sees all pandas DataFrames in the namespace',
+    `_alloy_last_result = _duckdb.sql("""${escaped}""").df()`,
+    '_alloy_last_columns = list(_alloy_last_result.columns)',
+  ];
+
+  if (saveAs) {
+    lines.push(`${saveAs} = _alloy_last_result.copy()`);
+    lines.push(`print(f"\\u2713 Saved as '${saveAs}' ({len(_alloy_last_result)} rows)")`);
+  }
+
+  lines.push(
+    '',
+    '# Build display data',
+    '_alloy_cols = list(_alloy_last_result.columns)',
+    '_alloy_records = []',
+    'for _, _r in _alloy_last_result.head(1000).iterrows():',
+    '    _rec = {}',
+    '    for _c in _alloy_cols:',
+    '        _v = _r[_c]',
+    '        if _pd.isna(_v): _rec[_c] = None',
+    '        elif hasattr(_v, "isoformat"): _rec[_c] = _v.isoformat()',
+    '        else:',
+    '            try: _json.dumps(_v); _rec[_c] = _v',
+    '            except: _rec[_c] = str(_v)',
+    '    _alloy_records.append(_rec)',
+    '_alloy_data = {"columns": _alloy_cols, "rows": _alloy_records, "total_rows": len(_alloy_last_result), "truncated": len(_alloy_last_result) > 1000}',
+    '_display({"application/vnd.alloy.resultset+json": _alloy_data, "text/plain": str(_alloy_last_result)}, raw=True)',
+    '',
+    'for _v in ["_duckdb","_pd","_json","_display","_alloy_cols","_alloy_records","_alloy_data","_rec","_r","_c","_v"]:',
+    '    try: exec(f"del {_v}")',
+    '    except: pass'
   );
   return lines.join('\n');
 }

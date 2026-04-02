@@ -175,6 +175,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     const LANGUAGES: Record<string, { label: string; mime: string }> = {
       python: { label: 'Python', mime: 'text/x-python' },
       sql: { label: 'SQL', mime: 'text/x-sql' },
+      duckdb: { label: 'DuckDB', mime: 'text/x-sql' },
       r: { label: 'R', mime: 'text/x-rsrc' }
     };
 

@@ -24,6 +24,14 @@ Built as a replacement for Azure Data Studio's notebook experience, which was [r
 - Windows Authentication and SQL Authentication
 - Connections persist across sessions (`~/.alloy/connections.json`)
 
+### DuckDB Cells — Query DataFrames with SQL
+- Set any cell to **DuckDB** in the dropdown
+- Write SQL that queries your pandas DataFrames as if they were tables
+- JOIN across DataFrames, use window functions, CTEs — full SQL power
+- Results saved as `_alloy_last_result` or via `-- save as: varname`
+- No database connection needed — DuckDB runs in-process
+- Can also read Parquet/CSV files: `SELECT * FROM 'data.parquet'`
+
 ### Multiple Database Connections
 - Connect to multiple databases simultaneously (SQL Server, PostgreSQL, MariaDB, etc.)
 - Each connection gets a named alias
@@ -104,9 +112,19 @@ WHERE order_date > '2026-01-01'
 SELECT * FROM backup_logs ORDER BY created_at DESC
 ```
 
+**DuckDB cell (query DataFrames with SQL — no database needed):**
+```sql
+-- save as: top_customers
+SELECT customer_name, SUM(quantity * price) as revenue
+FROM orders
+GROUP BY customer_name
+ORDER BY revenue DESC
+LIMIT 10
+```
+
 **Python cell:**
 ```python
-# 'orders' is already a pandas DataFrame
+# 'orders' and 'top_customers' are both pandas DataFrames
 orders['total'] = orders['quantity'] * orders['price']
 print(orders.describe())
 ```

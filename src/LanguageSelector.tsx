@@ -13,6 +13,7 @@ const LANGUAGE_KEY = 'alloy:language';
 const CELL_OPTIONS = [
   { value: 'python', label: 'Python', cellType: 'code' as const, mime: 'text/x-python' },
   { value: 'sql', label: 'SQL', cellType: 'code' as const, mime: 'text/x-sql' },
+  { value: 'duckdb', label: 'DuckDB', cellType: 'code' as const, mime: 'text/x-sql' },
   { value: 'r', label: 'R', cellType: 'code' as const, mime: 'text/x-rsrc' },
   { value: 'markdown', label: 'Markdown', cellType: 'markdown' as const, mime: '' },
   { value: 'raw', label: 'Raw', cellType: 'raw' as const, mime: '' }
