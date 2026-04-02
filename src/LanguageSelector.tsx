@@ -11,6 +11,7 @@ import { INotebookTracker, NotebookPanel, NotebookActions } from '@jupyterlab/no
 const LANGUAGE_KEY = 'alloy:language';
 
 const CELL_OPTIONS = [
+  { value: 'code', label: 'Code', cellType: 'code' as const, mime: '' },
   { value: 'python', label: 'Python', cellType: 'code' as const, mime: 'text/x-python' },
   { value: 'sql', label: 'SQL', cellType: 'code' as const, mime: 'text/x-sql' },
   { value: 'duckdb', label: 'DuckDB', cellType: 'code' as const, mime: 'text/x-sql' },
@@ -131,6 +132,7 @@ export class CellTypeSelectorWidget extends ReactWidget {
 
 /**
  * Install the unified selector into each notebook's toolbar.
+ * Includes "Code" as the default option so it works with any kernel.
  */
 export function addCellTypeSelectorToNotebook(
   tracker: INotebookTracker

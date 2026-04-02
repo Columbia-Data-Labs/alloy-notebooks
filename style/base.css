@@ -382,7 +382,7 @@
   border-color: var(--jp-brand-color1);
 }
 
-/* ── Hide JupyterLab's built-in cell type dropdown (we replace it) ── */
+/* ── Hide JupyterLab's built-in cell type dropdown (replaced by ours with Code option) ── */
 .jp-Notebook-toolbarCellType {
   display: none !important;
 }
