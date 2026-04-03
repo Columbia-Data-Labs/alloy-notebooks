@@ -138,14 +138,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
       ].join('\n');
 
       return new Promise<boolean>(resolve => {
-        const future = kernel.requestExecute({ code, silent: true });
-        let success = true;
-        future.onIOPub = msg => {
-          if (msg.header.msg_type === 'error') {
-            success = false;
-          }
+        const future = kernel.requestExecute({ code, silent: false, store_history: false });
+        future.onReply = msg => {
+          resolve(msg.content.status === 'ok');
         };
-        future.done.then(() => resolve(success)).catch(() => resolve(false));
+        future.done.catch(() => resolve(false));
       });
     };
 

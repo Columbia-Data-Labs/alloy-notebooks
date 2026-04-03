@@ -111,8 +111,10 @@ def build_connection_string(conn_config: dict) -> str:
         return f"duckdb:///{database}" if database else "duckdb://"
 
     # Build URL
-    if auth_type == "sql" and username:
-        from urllib.parse import quote_plus
+    # For non-MSSQL drivers, always include credentials if username is provided
+    # (auth_type "windows" only makes sense for MSSQL)
+    from urllib.parse import quote_plus
+    if username and (auth_type == "sql" or not driver.startswith("mssql")):
         user_part = f"{quote_plus(username)}:{quote_plus(password)}@"
     else:
         user_part = ""

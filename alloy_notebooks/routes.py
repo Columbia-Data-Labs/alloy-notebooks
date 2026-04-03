@@ -74,6 +74,12 @@ class ConnectionStringHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         body = self.get_json_body()
+        # If password is masked (from the frontend list), look up the real one
+        conn_id = body.get("id")
+        if conn_id and body.get("password") in ("••••", ""):
+            stored = connection_store.get_connection(conn_id)
+            if stored and stored.get("password"):
+                body["password"] = stored["password"]
         try:
             conn_str = connection_store.build_connection_string(body)
             self.finish(json.dumps({"connection_string": conn_str}))
